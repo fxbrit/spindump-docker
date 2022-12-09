@@ -2,7 +2,7 @@
 
 To build the Docker image enter:
 ```
-docker build -t fxbrit/spindump-docker
+docker build . -t fxbrit/spindump-docker
 ```
 
 ## Run
