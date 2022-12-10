@@ -15,11 +15,18 @@ Then enter:
 docker build . -t fxbrit/spindump-docker
 ```
 
+## Pull
+
+The image is [available on Docker Hub](https://hub.docker.com/r/fxbrit/spindump-docker) so you can use:
+```
+docker pull fxbrit/spindump-docker
+```
+
 ## Run
 
 :warning: :penguin: **the captures can only be performed on Linux hosts.**
 
-First create the source bind directory:
+Once you built or pulled the image, create the source bind directory using:
 ```
 mkdir spdmp-vol
 ```
