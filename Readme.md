@@ -39,3 +39,48 @@ docker run -d --rm --net=host\
 ```
 
 The output will be a set of QUIC captures, stored in `spdmp-vol/capture.json`.
+
+### Options
+
+By using `ENV` variables it is possible to customize captures. In particular:
+- `INTERFACE`: allows to specify the name of the host interface that we want to monitor.
+  By default it will monitor all interfaces.
+- `MAX_RECEIVE`: allows to set a limit to the maximum number of packets in the capture.
+  By default there is no limit.
+- `SOURCE_IP`: allows to filter by source IP address or source IP network.
+  Accepts both IPv4 and IPv6 addresses.
+- `DEST_IP`: allows to filter by destination IP address or destination IP network.
+  Accepts both IPv4 and IPv6 addresses.
+
+These variables are mapped to specific [Spindump options](https://github.com/EricssonResearch/spindump/blob/master/Usage.md).
+
+### Usage examples
+
+If we want to monitor the interface `eth0` we can use:
+
+```
+docker run -d --rm --net=host\
+  --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
+  --env INTERFACE=eth0\
+  --name quic-capture fxbrit/spindump-docker
+```
+
+If we want to monitor traffic going to the network `192.168.1.0/24`
+via the interface `eth0` we can use:
+
+```
+docker run -d --rm --net=host\
+  --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
+  --env INTERFACE=eth0 DEST_IP=192.168.1.0/24
+  --name quic-capture fxbrit/spindump-docker
+```
+
+If we want to monitor traffic going from the host `192.168.2.128` to
+the nextwork `192.168.1.0/24` via the interface `eth0` we can use:
+
+```
+docker run -d --rm --net=host\
+  --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
+  --env INTERFACE=eth0 SOURCE_IP=192.168.2.128 DEST_IP=192.168.1.0/24
+  --name quic-capture fxbrit/spindump-docker
+```
