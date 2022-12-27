@@ -47,10 +47,8 @@ By using `ENV` variables it is possible to customize captures. In particular:
   By default it will monitor all interfaces.
 - `MAX_RECEIVE`: allows to set a limit to the maximum number of packets in the capture.
   By default there is no limit.
-- `SOURCE_IP`: allows to filter by source IP address or source IP network.
-  Accepts both IPv4 and IPv6 addresses.
-- `DEST_IP`: allows to filter by destination IP address or destination IP network.
-  Accepts both IPv4 and IPv6 addresses.
+- `FILTERS`: allows to specify extra [PCAP filters](https://linux.die.net/man/7/pcap-filter).
+  Always use `and` at the start of a filter.
 
 These variables are mapped to specific [Spindump options](https://github.com/EricssonResearch/spindump/blob/master/Usage.md).
 
@@ -65,25 +63,24 @@ docker run -d --rm --net=host\
   --name quic-capture fxbrit/spindump-docker
 ```
 
-If we want to monitor traffic going to the network `192.168.1.0/24`
+If we want to monitor traffic going to the network `142.250.0.0/16`
 via the interface `wlp3s0` we can use:
 
 ```
 docker run -d --rm --net=host\
   --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
   -e "INTERFACE=wlp3s0"\
-  -e "DEST_IP=192.168.1.0/24"\
+  -e "FILTERS= and dst net 142.250.0.0/16"\
   --name quic-capture fxbrit/spindump-docker
 ```
 
 If we want to monitor traffic going from the host `192.168.2.128` to
-the nextwork `192.168.1.0/24` via the interface `wlp3s0` we can use:
+the network `142.250.0.0/16` via the interface `wlp3s0` we can use:
 
 ```
 docker run -d --rm --net=host\
   --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
   -e "INTERFACE=wlp3s0"\
-  -e "SOURCE_IP=192.168.2.128"\
-  -e "DEST_IP=192.168.1.0/24"\
+  -e "FILTERS=and src 192.168.2.128 and dst net 142.250.0.0/16"\
   --name quic-capture fxbrit/spindump-docker
 ```
