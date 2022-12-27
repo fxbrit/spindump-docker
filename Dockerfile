@@ -18,4 +18,4 @@ RUN git clone https://github.com/EricssonResearch/spindump\
     && make install
 # capture QUIC traffic and save it in the output file
 # also sets all the ENV variables
-CMD spindump udp and port 443 ${FILTERS} --interface ${INTERFACE} --max-receive ${MAX_RECEIVE} --text --format json > /out/capture.json
+CMD spindump udp and port 443 ${FILTERS} --interface ${INTERFACE} --max-receive ${MAX_RECEIVE} --textual --format json > /out/capture.json
