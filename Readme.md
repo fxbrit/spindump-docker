@@ -56,33 +56,33 @@ These variables are mapped to specific [Spindump options](https://github.com/Eri
 
 ### Usage examples
 
-If we want to monitor the interface `eth0` we can use:
+If we want to monitor the interface `wlp3s0` we can use:
 
 ```
 docker run -d --rm --net=host\
   --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
-  -e "INTERFACE=eth0"\
+  -e "INTERFACE=wlp3s0"\
   --name quic-capture fxbrit/spindump-docker
 ```
 
 If we want to monitor traffic going to the network `192.168.1.0/24`
-via the interface `eth0` we can use:
+via the interface `wlp3s0` we can use:
 
 ```
 docker run -d --rm --net=host\
   --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
-  -e "INTERFACE=eth0"\
+  -e "INTERFACE=wlp3s0"\
   -e "DEST_IP=192.168.1.0/24"\
   --name quic-capture fxbrit/spindump-docker
 ```
 
 If we want to monitor traffic going from the host `192.168.2.128` to
-the nextwork `192.168.1.0/24` via the interface `eth0` we can use:
+the nextwork `192.168.1.0/24` via the interface `wlp3s0` we can use:
 
 ```
 docker run -d --rm --net=host\
   --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
-  -e "INTERFACE=eth0"\
+  -e "INTERFACE=wlp3s0"\
   -e "SOURCE_IP=192.168.2.128"\
   -e "DEST_IP=192.168.1.0/24"\
   --name quic-capture fxbrit/spindump-docker
