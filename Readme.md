@@ -61,7 +61,7 @@ If we want to monitor the interface `eth0` we can use:
 ```
 docker run -d --rm --net=host\
   --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
-  --env INTERFACE=eth0\
+  -e "INTERFACE=eth0"\
   --name quic-capture fxbrit/spindump-docker
 ```
 
@@ -71,7 +71,8 @@ via the interface `eth0` we can use:
 ```
 docker run -d --rm --net=host\
   --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
-  --env INTERFACE=eth0 DEST_IP=192.168.1.0/24
+  -e "INTERFACE=eth0"\
+  -e "DEST_IP=192.168.1.0/24"\
   --name quic-capture fxbrit/spindump-docker
 ```
 
@@ -81,6 +82,8 @@ the nextwork `192.168.1.0/24` via the interface `eth0` we can use:
 ```
 docker run -d --rm --net=host\
   --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
-  --env INTERFACE=eth0 SOURCE_IP=192.168.2.128 DEST_IP=192.168.1.0/24
+  -e "INTERFACE=eth0"\
+  -e "SOURCE_IP=192.168.2.128"\
+  -e "DEST_IP=192.168.1.0/24"\
   --name quic-capture fxbrit/spindump-docker
 ```
