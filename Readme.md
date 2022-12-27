@@ -33,8 +33,8 @@ mkdir spdmp-vol
 
 Then start the container:
 ```
-docker run -d --rm --net=host\
-  --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
+docker run -d --rm --net=host \
+  -v "$(pwd)"/out:/out \
   --name quic-capture fxbrit/spindump-docker
 ```
 
@@ -57,9 +57,9 @@ These variables are mapped to specific [Spindump options](https://github.com/Eri
 If we want to monitor the interface `wlp3s0` we can use:
 
 ```
-docker run -d --rm --net=host\
-  --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
-  -e "INTERFACE=wlp3s0"\
+docker run -d --rm --net=host \
+  -v "$(pwd)"/out:/out \
+  -e "INTERFACE=wlp3s0" \
   --name quic-capture fxbrit/spindump-docker
 ```
 
@@ -67,10 +67,10 @@ If we want to monitor traffic going to the network `142.250.0.0/16`
 via the interface `wlp3s0` we can use:
 
 ```
-docker run -d --rm --net=host\
-  --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
-  -e "INTERFACE=wlp3s0"\
-  -e "FILTERS= and dst net 142.250.0.0/16"\
+docker run -d --rm --net=host \
+  -v "$(pwd)"/out:/out \
+  -e "INTERFACE=wlp3s0" \
+  -e "FILTERS= and dst net 142.250.0.0/16" \
   --name quic-capture fxbrit/spindump-docker
 ```
 
@@ -78,9 +78,9 @@ If we want to monitor traffic going from the host `192.168.2.128` to
 the network `142.250.0.0/16` via the interface `wlp3s0` we can use:
 
 ```
-docker run -d --rm --net=host\
-  --mount type=bind,source="$(pwd)"/spdmp-vol,target=/out\
-  -e "INTERFACE=wlp3s0"\
-  -e "FILTERS=and src 192.168.2.128 and dst net 142.250.0.0/16"\
+docker run -d --rm --net=host \
+  -v "$(pwd)"/out:/out \
+  -e "INTERFACE=wlp3s0" \
+  -e "FILTERS=and src 192.168.2.128 and dst net 142.250.0.0/16" \
   --name quic-capture fxbrit/spindump-docker
 ```
