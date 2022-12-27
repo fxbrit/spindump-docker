@@ -1,0 +1,21 @@
+version: "2"
+services:
+
+  plain:
+    image: fxbrit/spindump-docker
+    network_mode: "host"
+    volumes:
+      - ./out:/out
+
+  with_filters:
+    image: fxbrit/spindump-docker
+    network_mode: "host"
+    volumes:
+      - ./out_with_filters:/out
+    environment:
+      # change this to any interface you want
+      INTERFACE: "wlp3s0"
+      # change this to any max number of packets
+      MAX_RECEIVE: 0
+      # change this to any pcap filter you want
+      FILTERS: "and src 192.168.2.128 and dst net 142.250.0.0/16"

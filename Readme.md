@@ -70,7 +70,7 @@ via the interface `wlp3s0` we can use:
 docker run -d --rm --net=host \
   -v "$(pwd)"/out:/out \
   -e "INTERFACE=wlp3s0" \
-  -e "FILTERS= and dst net 142.250.0.0/16" \
+  -e "FILTERS=and dst net 142.250.0.0/16" \
   --name quic-capture fxbrit/spindump-docker
 ```
 
@@ -83,4 +83,15 @@ docker run -d --rm --net=host \
   -e "INTERFACE=wlp3s0" \
   -e "FILTERS=and src 192.168.2.128 and dst net 142.250.0.0/16" \
   --name quic-capture fxbrit/spindump-docker
+```
+
+#### Compose
+
+Docker Compose can make deployment easier by allowing to specify `ENV`
+variables on file instead of entering complex commands. 
+It also gives the option to create multiple pre-configurations that can be
+run with a single command:
+
+```
+docker compose up -d <service_name>
 ```
