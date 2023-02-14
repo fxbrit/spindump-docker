@@ -36,17 +36,43 @@ def parse_file(filename):
   for spin in spins:
     if dest_ip != spin["dest_ipaddr"]:
       dest_ip = spin["dest_ipaddr"]
-      out += "Destination IP address: " + str(dest_ip) + "\n"
+      out += "\nDestination IP address: " + str(dest_ip) + "\n"
+      current_spin = 0
+      flip_counter = 0
+      start_timestamp = None
     if conn_id != spin["connection_id"]:
       conn_id = spin["connection_id"]
       out += "\tConnection ID: " + str(conn_id) + "\n"
-    # Spindump timestamps are in µs, we must convert to s
+    # Spindump timestamps are in µs, we must convert to s.
     timestamp = datetime.fromtimestamp(spin["timestamp"] / (10.0**6))
+    spin_bit = spin["spin_bit"]
+    if current_spin != spin_bit:
+      if start_timestamp is None:
+        current_spin = spin_bit
+        start_timestamp = timestamp
+        flip_counter+=1
+        out += "\t--- Flip number: " + str(flip_counter) + "\n"
+      else:
+        time_passed = timestamp - start_timestamp
+        ms = time_passed.microseconds * (10.0**-3)
+        # This statement can be used to debug and filter out small
+        # time intervals that might represent fuzzy edges.
+        if (ms >= 0):
+          out += ("\t--- Time passed: " +
+                  timestamp.strftime("%H:%M:%S.%f") +
+                  " - " +
+                  start_timestamp.strftime("%H:%M:%S.%f") +
+                  " = " +
+                  str(ms) + "ms\n")
+          current_spin = spin_bit
+          start_timestamp = timestamp
+          flip_counter+=1
+          out += "\t--- Flip number: " + str(flip_counter) + "\n"
     out += ("\t" + timestamp.strftime("%H:%M:%S.%f") + 
             " Spin Bit: " + str(spin["spin_bit"]) + "\n")
   return out
 
-# Write to file the output of parse_file()
+# Write to file the output of parse_file().
 def write_output(output):
   with open("parser_out.txt", "w") as out_file:
     out_file.write(output)
