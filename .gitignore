@@ -1,3 +1,6 @@
 .DS_Store
 .vscode
 out*/
+vm/*
+tools/*.json
+tools/*.txt
