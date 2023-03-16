@@ -70,7 +70,7 @@ def parse_file(filename):
                   " = " +
                   str(interval_s) + ":" + str(interval_ms) + "ms\n")
         time_passed = timestamp - start_timestamp
-        time_passed_s = time.seconds
+        time_passed_s = time_passed.seconds
         time_passed_ms = time_passed.microseconds * (10.0**-3)
         # This statement can be used to debug and filter out small
         # time intervals that might represent fuzzy edges.
