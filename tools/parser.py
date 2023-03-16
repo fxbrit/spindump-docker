@@ -57,25 +57,30 @@ def parse_file(filename):
         previous = timestamp
         out += "\t--- Flip number: " + str(flip_counter) + "\n"
       else:
-        interval = previous - start_timestamp
-        interval_ms = interval.microseconds * (10.0**-3)
-        time_passed = timestamp - start_timestamp
-        ms = time_passed.microseconds * (10.0**-3)
-        out += ("\t--- Marking interval lasted: " +
+        if (previous <= start_timestamp):
+          out += "\t--- Single packet in this marking interval\n"
+        else:
+          interval = previous - start_timestamp
+          interval_s = interval.seconds
+          interval_ms = interval.microseconds * (10.0**-3)
+          out += ("\t--- Marking interval lasted at least: " +
                   previous.strftime("%H:%M:%S.%f") +
                   " - " +
                   start_timestamp.strftime("%H:%M:%S.%f") +
                   " = " +
-                  str(interval_ms) + "ms\n")
+                  str(interval_s) + ":" + str(interval_ms) + "ms\n")
+        time_passed = timestamp - start_timestamp
+        time_passed_s = time.seconds
+        time_passed_ms = time_passed.microseconds * (10.0**-3)
         # This statement can be used to debug and filter out small
         # time intervals that might represent fuzzy edges.
         if (ms >= 0):
-          out += ("\t--- Time passed between flips: " +
+          out += ("\t--- Marking interval lasted at most: " +
                   timestamp.strftime("%H:%M:%S.%f") +
                   " - " +
                   start_timestamp.strftime("%H:%M:%S.%f") +
                   " = " +
-                  str(ms) + "ms\n")
+                  str(time_passed_s) + ":" + str(time_passed_ms) + "\n")
           current_spin = spin_bit
           start_timestamp = timestamp
           flip_counter+=1
