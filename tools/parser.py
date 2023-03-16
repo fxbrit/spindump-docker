@@ -63,24 +63,24 @@ def parse_file(filename):
           interval = previous - start_timestamp
           interval_s = interval.seconds
           interval_ms = interval.microseconds * (10.0**-3)
-          out += ("\t--- Marking interval lasted at least: " +
+          out += ("\t--- Marking interval lasted at least:\t" +
                   previous.strftime("%H:%M:%S.%f") +
                   " - " +
                   start_timestamp.strftime("%H:%M:%S.%f") +
                   " = " +
-                  str(interval_s) + ":" + str(interval_ms) + "ms\n")
+                  str(interval_s*1000 + interval_ms) + "ms\n")
         time_passed = timestamp - start_timestamp
         time_passed_s = time_passed.seconds
         time_passed_ms = time_passed.microseconds * (10.0**-3)
         # This statement can be used to debug and filter out small
         # time intervals that might represent fuzzy edges.
-        if (ms >= 0):
-          out += ("\t--- Marking interval lasted at most: " +
+        if (time_passed_ms >= 0):
+          out += ("\t--- Marking interval lasted at most:\t" +
                   timestamp.strftime("%H:%M:%S.%f") +
                   " - " +
                   start_timestamp.strftime("%H:%M:%S.%f") +
                   " = " +
-                  str(time_passed_s) + ":" + str(time_passed_ms) + "\n")
+                  str(time_passed_s*1000 + time_passed_ms) + "ms\n")
           current_spin = spin_bit
           start_timestamp = timestamp
           flip_counter+=1
