@@ -43,10 +43,11 @@ def parse_file(filename):
       # Spindump parses new Connection IDs only on Long Headers. For Short Headers
       # it uses UDP, IP-IP, port-port instead: this means a new Connection ID is a new
       # connection towards the same IP address.
-      out += "\tConnection ID: " + str(conn_id) + ", new connection towards" + str(dest_ip) + "\n"
+      out += "\tConnection ID: " + str(conn_id) + ", new connection towards " + str(dest_ip) + "\n"
       # As a result we want to start counting flips from 0.
       current_spin, flip_counter, start_timestamp = (0,0,None)
     # Spindump timestamps are in µs, we must convert to s.
+    previous = timestamp
     timestamp = datetime.fromtimestamp(spin["timestamp"] / (10.0**6))
     spin_bit = spin["spin_bit"]
     if current_spin != spin_bit:
@@ -56,12 +57,20 @@ def parse_file(filename):
         flip_counter+=1
         out += "\t--- Flip number: " + str(flip_counter) + "\n"
       else:
+        interval = previous - start_timestamp
+        interval_ms = interval.microseconds * (10.0**-3)
         time_passed = timestamp - start_timestamp
         ms = time_passed.microseconds * (10.0**-3)
+        out += ("\t--- Marking interval lasted: " +
+                  previous.strftime("%H:%M:%S.%f") +
+                  " - " +
+                  start_timestamp.strftime("%H:%M:%S.%f") +
+                  " = " +
+                  str(interval_ms) + "ms\n")
         # This statement can be used to debug and filter out small
         # time intervals that might represent fuzzy edges.
         if (ms >= 0):
-          out += ("\t--- Time passed: " +
+          out += ("\t--- Time passed between flips: " +
                   timestamp.strftime("%H:%M:%S.%f") +
                   " - " +
                   start_timestamp.strftime("%H:%M:%S.%f") +
