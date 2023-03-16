@@ -32,17 +32,20 @@ def parse_file(filename):
         spins.append(spin)
   # Each connection has its own Spin Bit value so we should divide
   # by destination IP address first, and then sort by timestamp.
-  spins.sort(key=itemgetter("dest_ipaddr", "timestamp"))
+  spins.sort(key=itemgetter("dest_ipaddr", "connection_id", "timestamp"))
   for spin in spins:
     if dest_ip != spin["dest_ipaddr"]:
       dest_ip = spin["dest_ipaddr"]
       out += "\nDestination IP address: " + str(dest_ip) + "\n"
-      current_spin = 0
-      flip_counter = 0
-      start_timestamp = None
+      current_spin, flip_counter, start_timestamp = (0,0,None)
     if conn_id != spin["connection_id"]:
       conn_id = spin["connection_id"]
-      out += "\tConnection ID: " + str(conn_id) + "\n"
+      # Spindump parses new Connection IDs only on Long Headers. For Short Headers
+      # it uses UDP, IP-IP, port-port instead: this means a new Connection ID is a new
+      # connection towards the same IP address.
+      out += "\tConnection ID: " + str(conn_id) + ", new connection towards" + str(dest_ip) + "\n"
+      # As a result we want to start counting flips from 0.
+      current_spin, flip_counter, start_timestamp = (0,0,None)
     # Spindump timestamps are in µs, we must convert to s.
     timestamp = datetime.fromtimestamp(spin["timestamp"] / (10.0**6))
     spin_bit = spin["spin_bit"]
