@@ -47,7 +47,6 @@ def parse_file(filename):
       # As a result we want to start counting flips from 0.
       current_spin, flip_counter, start_timestamp = (0,0,None)
     # Spindump timestamps are in µs, we must convert to s.
-    previous = timestamp
     timestamp = datetime.fromtimestamp(spin["timestamp"] / (10.0**6))
     spin_bit = spin["spin_bit"]
     if current_spin != spin_bit:
@@ -55,6 +54,7 @@ def parse_file(filename):
         current_spin = spin_bit
         start_timestamp = timestamp
         flip_counter+=1
+        previous = timestamp
         out += "\t--- Flip number: " + str(flip_counter) + "\n"
       else:
         interval = previous - start_timestamp
@@ -80,6 +80,8 @@ def parse_file(filename):
           start_timestamp = timestamp
           flip_counter+=1
           out += "\t--- Flip number: " + str(flip_counter) + "\n"
+    else:
+      previous = timestamp
     out += ("\t" + timestamp.strftime("%H:%M:%S.%f") + 
             " Spin Bit: " + str(spin["spin_bit"]) + "\n")
   return out
