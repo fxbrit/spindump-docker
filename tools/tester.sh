@@ -28,7 +28,7 @@ stop_capture_and_move_output () {
 #   $1 is capture number.
 quic_go_get_it () {
     cd $chromium_path
-    ./out/$checkout/quic_client $url --quiet --num_requests=$repeat_per_capture > $spindump_path/tools/tester_output/log_$1.txt 2>&1
+    ./out/$checkout/quic_client $url --quiet --num_requests=$repeat_per_capture > $spindump_path/tools/tester_output_$delay/log_$1.txt 2>&1
 }
 
 for (( i=1 ; i<=$tot_captures ; i++ )); 
