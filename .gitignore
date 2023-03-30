@@ -4,3 +4,6 @@ out*/
 vm/*
 tools/*.json
 tools/*.txt
+test/
+tools/tester_output_*
+tools/parser_output_*
