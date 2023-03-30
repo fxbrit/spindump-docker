@@ -21,23 +21,23 @@ start_capture () {
 stop_capture_and_move_output () {
     cd $spindump_path
     docker compose stop $compose
-    mv $compose/capture.json tools/tester_output/capture_$1.json
+    cp ./$compose/capture.json tools/tester_output_$delay/capture_$1.json
 }
 
 # Execute a fetch with QUIC client:
 #   $1 is capture number.
 quic_go_get_it () {
-    cd $quic_client_path
-    ./out/$checkout/quic_client $url --quiet --num_requests=$repeat_per_capture > $spindump_path/log_$1.txt 2>&1
+    cd $chromium_path
+    ./out/$checkout/quic_client $url --quiet --num_requests=$repeat_per_capture > $spindump_path/tools/tester_output/log_$1.txt 2>&1
 }
 
-for i  in {1..$tot_captures};
+for (( i=1 ; i<=$tot_captures ; i++ )); 
 do
-    echo 'Starting capture number $i...'
+    echo "Starting capture number $i..."
     start_capture
-    echo 'QUIC client doing its thing...'
+    echo "QUIC client doing its thing..."
     quic_go_get_it $i
-    echo 'Stopping and saving the capture...'
+    echo "Stopping and saving the capture..."
     stop_capture_and_move_output $i
-    echo 'Finished capture number $i.' 
+    echo "Finished capture number $i." 
 done
