@@ -36,8 +36,8 @@ quic_go_get_it () {
 parse () {
     cd $spindump_path/tools
     mkdir -p parser_output_$delay
-    python3 parser.py ./tester_output_$delay/capture_$1.json ./tester_output_$delay/log_$1.json
-    mv ./parset_out.txt ./parser_output_$delay/parset_out_$1.txt
+    python3 parser.py ./tester_output_$delay/capture_$1.json ./tester_output_$delay/log_$1.txt
+    mv ./parser_out.txt ./parser_output_$delay/parser_out_$1.txt
 }
 
 for (( i=1 ; i<=$tot_captures ; i++ )); 
