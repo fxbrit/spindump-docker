@@ -1,4 +1,6 @@
 import json
+import os
+import sys
 from datetime import datetime
 from operator import itemgetter
 
@@ -6,7 +8,7 @@ from operator import itemgetter
 Convert a Spindump capture into a proper JSON and return the filename.
 '''
 def fix_file(filename):
-  new_filename = filename.split(".", 1)[0] + "_fixed.json"
+  new_filename = "fixed.json"
   with open(filename) as in_file:
     file_data = in_file.read()
     # Normalize the 'Addrs' field of the Spindump capture.
@@ -172,14 +174,11 @@ def read_log(filename):
 '''
 Main function.
 '''
-def main():    
-  filename = input("Name of the capture file: ")
-  log = input("Name of the log file: ")
-  # filename = "capture.json"
-  # log = "log.txt"
-  to_parse = fix_file(filename)
+def main(capture, log):    
+  to_parse = fix_file(capture)
   log_out = read_log(log)
   parsed = parse_file(to_parse, log_out)
+  os.remove(to_parse)
   write_output(parsed)
 
-main()
+main(capture=sys.argv[1], log=sys.argv[2])
