@@ -31,6 +31,15 @@ quic_go_get_it () {
     ./out/$checkout/quic_client $url --quiet --num_requests=$repeat_per_capture > $spindump_path/tools/tester_output_$delay/log_$1.txt 2>&1
 }
 
+# Parse a capture and its relative log with parser.py:
+#   $1 is capture number.
+parse () {
+    cd $spindump_path/tools
+    mkdir -p parser_output_$delay
+    python3 parser.py ./tester_output_$delay/capture_$1.json ./tester_output_$delay/log_$1.json
+    mv ./parset_out.txt ./parser_output_$delay/parset_out_$1.txt
+}
+
 for (( i=1 ; i<=$tot_captures ; i++ )); 
 do
     echo "Starting capture number $i..."
@@ -39,5 +48,7 @@ do
     quic_go_get_it $i
     echo "Stopping and saving the capture..."
     stop_capture_and_move_output $i
-    echo "Finished capture number $i." 
+    echo "Finished capture number $i."
+    parse $i
+    echo "Parser did its job!" 
 done

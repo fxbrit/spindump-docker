@@ -10,4 +10,7 @@ Given a capture from the spindump-docker container, it produces a readable outpu
 
 ## Tester
 
-Bash scripts that automates QUIC client calls to a given URL and produces both a log file and a set of Spindump captures.
+Bash scripts that automates QUIC client calls to a given URL and produces:
+* a QUIC Client log file;
+* a set of Spindump captures;
+* the output of the Parser for each log - capture couple.
