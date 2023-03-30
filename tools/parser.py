@@ -72,6 +72,10 @@ def parse_file(filename, log_out):
           if (new_conn):
             flip_counter, new_conn = (0,False)
             out += "\tConnection ID: " + str(conn_id) + ", new connection towards " + str(dest_ip) + "\n"
+            # When a new connection occurs the previous one is terminated so a lack of marked packets
+            # in between the two might impact the connection. The new handshake also takes place in
+            # between, further impacting the result.
+            out += "\t! The last measurement of the past connection might be impacted by a lack of packets\n"
           flip_counter+=1
           out += print_flip(flip_counter)
       else:
@@ -79,6 +83,9 @@ def parse_file(filename, log_out):
     # The timestamp and the Spin Bit should always be printed.
     out += ("\t" + timestamp.strftime("%H:%M:%S.%f") + 
             " Spin Bit: " + str(spin_bit) + "\n")
+    # For the last measurement available we can only estimate a duration
+    # of the marking interval. This is NOT a valid Spin Bit measurement
+    # since no further flip occurs and no other packets are sent.
     if i == (len(spins) - 1):
       interval = previous - start_timestamp
       interval_s = interval.seconds
@@ -89,6 +96,7 @@ def parse_file(filename, log_out):
               start_timestamp.strftime("%H:%M:%S.%f") +
               " = " +
               str(interval_s*1000 + interval_ms) + "ms\n")
+      out += "\t! This is not a valid Spin Bit measurement since no further flip or packet exists\n"
   return out
 
 '''
