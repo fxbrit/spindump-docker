@@ -79,6 +79,16 @@ def parse_file(filename, log_out):
     # The timestamp and the Spin Bit should always be printed.
     out += ("\t" + timestamp.strftime("%H:%M:%S.%f") + 
             " Spin Bit: " + str(spin_bit) + "\n")
+    if i == (len(spins) - 1):
+      interval = previous - start_timestamp
+      interval_s = interval.seconds
+      interval_ms = interval.microseconds * (10.0**-3)
+      out += ("\t--- Last marking interval lasted at least:\t" +
+              previous.strftime("%H:%M:%S.%f") +
+              " - " +
+              start_timestamp.strftime("%H:%M:%S.%f") +
+              " = " +
+              str(interval_s*1000 + interval_ms) + "ms\n")
   return out
 
 '''
@@ -143,14 +153,11 @@ Read a Chromium log file to get internal RTT values.
 def read_log(filename):
   out = []
   with open(filename, "r") as filedata:
-      flips = 0
       for line in filedata:
           sample = "Measured latest_rtt_ is"
           if sample in line:
-              flips += 1
               us = line.rstrip('\n').split("is: ",1)[1]
-              out.append("\t||| Internal RTT in Chromium:\t" + us
-                          + " for flip number " + str(flips) + "\n")
+              out.append("\t||| Internal RTT in Chromium:\t" + us + "\n")
   filedata.close()
   return out
 
