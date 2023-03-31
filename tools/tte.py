@@ -1,5 +1,6 @@
-import sys
+import os
 import re
+import sys
 
 '''
 Read a parser.py output and extract valuable details.
@@ -64,18 +65,26 @@ def analyze_out(out):
     # Average deviation.
     avg = tot / entries
     # Average deviation excluding last interval of a connection.
-    avg_nolast = tot_nolast / float(nolast)
+    # avg_nolast = tot_nolast / float(nolast)
     # Average deviation excluding obvious outliers with more than 100% deviation
     avg_pruned = tot_pruned / float(not_pruned)
+    pruned = entries - not_pruned
     # Percentage of pruned entries
-    pruned_pct = float("{:.2f}".format((entries - not_pruned)*100/entries))
-    return (avg, avg_nolast, (avg_pruned, pruned_pct))
+    pruned_pct = float("{:.2f}".format(pruned*100/entries))
+    out = "Average deviation: " + "{:.2f}".format(avg) + "%"
+    if pruned_pct != 0.0:
+        out += "\tPruned average deviation: " + "{:.2f}".format(avg_pruned) + "% - " + str(pruned_pct) + "% of the entries were pruned.\n"
+    else:
+        out += "\tNo pruning necessary.\n"
+    return out
 
 '''
 Main function.
 '''
 def main(parser_out):
-    out = analyze_out(read(parser_out))
-    print(out)
+    for filename in os.listdir(parser_out):
+        path = parser_out + "/" + filename
+        out = analyze_out(read(path))
+        print(out)
 
 main(parser_out=sys.argv[1])
