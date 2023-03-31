@@ -36,7 +36,8 @@ def read(filename):
             measure = {
                 "interval": 0,
                 "rtt": 0,
-                "is_last": False
+                "is_last": False,
+                "deviation": 0
                 }
         # New connection occured so measure might be flawed.
         elif "! The last" in line:
@@ -45,16 +46,36 @@ def read(filename):
   return measures_list
 
 '''
-TODO: produce an indication of the accuracy, evaluate impact of is_last.
+Produce an indication of the accuracy by means of average deviation.
+Also evaluate the same metrics when excluding last interval and
+obvious outliers.
 '''
 def analyze_out(out):
-    return
+    tot = tot_nolast = nolast = tot_pruned = not_pruned = 0
+    entries = float(len(out))
+    for entry in out:
+        tot += entry["deviation"]
+        if entry["is_last"] == False:
+            tot_nolast += entry["deviation"]
+            nolast += 1
+        if entry["deviation"] < 100:
+            tot_pruned += entry["deviation"]
+            not_pruned += 1
+    # Average deviation.
+    avg = tot / entries
+    # Average deviation excluding last interval of a connection.
+    avg_nolast = tot_nolast / float(nolast)
+    # Average deviation excluding obvious outliers with more than 100% deviation
+    avg_pruned = tot_pruned / float(not_pruned)
+    # Percentage of pruned entries
+    pruned_pct = float("{:.2f}".format((entries - not_pruned)*100/entries))
+    return (avg, avg_nolast, (avg_pruned, pruned_pct))
 
 '''
 Main function.
 '''
 def main(parser_out):
-    for line in read(parser_out):
-        print(line)
+    out = analyze_out(read(parser_out))
+    print(out)
 
 main(parser_out=sys.argv[1])
