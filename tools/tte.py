@@ -35,9 +35,10 @@ def read(filename):
             # Only take 4 decimals and then covert to a float
             measure["deviation"] = float(
                 "{:.4f}".format(
-                    ((measure["interval"] - measure["rtt"]) / measure["rtt"])*100
+                    abs(((measure["interval"] - measure["rtt"]) / measure["rtt"]))*100
                 )
             )
+            print(measure)
             measures_list.append(measure)
             measure = {
                 "interval": 0,
@@ -73,6 +74,10 @@ def analyze_out(measures_list, t):
             tot_pruned += entry["deviation"]
             not_pruned += 1
             rtt_pruned += entry["rtt"]
+    # 
+    if entries == 0:
+        t.add_row(["","","","","","","",""])
+        return t
     # Average deviation.
     avg = tot / entries
     # Average deviation excluding last interval of a connection.
