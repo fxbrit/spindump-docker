@@ -18,3 +18,9 @@ Bash scripts that automates QUIC client calls to a given URL and produces:
 ## tte
 
 Time To Evaluate takes the Parser output and tries to understand the deviation that captures have from the internal RTT, and what impacts the results the most.
+
+For its dependencies you can create a `venv` and then use:
+
+```
+python3 -m pip install -r requirements.txt
+```

@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+from texttable import Texttable
 
 '''
 Read a parser.py output and extract valuable details.
@@ -55,17 +56,23 @@ Produce an indication of the accuracy by means of average deviation.
 Also evaluate the same metrics when excluding last interval and
 obvious outliers.
 '''
-def analyze_out(measures_list):
-    tot = tot_nolast = nolast = tot_pruned = not_pruned = 0
+def analyze_out(measures_list, t):
+    tot = rtt = 0
+    nolast = tot_nolast = rtt_nolast = 0
+    tot_pruned = not_pruned = rtt_pruned = 0
     entries = float(len(measures_list))
+    row = []
     for entry in measures_list:
         tot += entry["deviation"]
+        rtt += entry["rtt"]
         if entry["is_last"] == False:
             tot_nolast += entry["deviation"]
             nolast += 1
+            rtt_nolast += entry["rtt"]
         if entry["deviation"] < 100:
             tot_pruned += entry["deviation"]
             not_pruned += 1
+            rtt_pruned += entry["rtt"]
     # Average deviation.
     avg = tot / entries
     # Average deviation excluding last interval of a connection.
@@ -75,20 +82,48 @@ def analyze_out(measures_list):
     pruned = entries - not_pruned
     # Percentage of pruned entries
     pruned_pct = float("{:.2f}".format(pruned*100/entries))
-    out = "Average deviation: " + "{:.2f}".format(avg) + "%"
+    # AVG RTT
+    avg_rtt = rtt / entries
+    row.append("{:.3f}".format(avg_rtt))
+    # AVG Deviation (% and ms)
+    row.append("{:.3f}".format(avg))
+    row.append("{:.3f}".format(avg * avg_rtt / 100))
     if pruned_pct != 0.0:
-        out += "\tPruned average deviation: " + "{:.2f}".format(avg_pruned) + "% - " + str(pruned_pct) + "% of the entries were pruned.\n"
+        pruned_num = str(int(pruned))  + " out of " + str(int(entries))
+        # AVG Deviation with pruned outliers (% and ms)
+        row.append("{:.3f}".format(avg_pruned))
+        row.append("{:.3f}".format(avg_pruned * avg_rtt / 100))
+        # Percentage of pruned entries
+        row.append(pruned_pct)
+        row.append(pruned_num)
     else:
-        out += "\tNo pruning necessary.\n"
-    return out
+        row.append("")
+        row.append("")
+        row.append("")
+        row.append("No pruning necessary")
+    t.add_row(row)
+    return t
 
 '''
 Main function.
 '''
 def main(parser_out):
+    table = Texttable()
+    table.header(
+        [
+        "AVG RTT (ms)",
+        "AVG Deviation (%)",
+        "AVG Deviation (ms)",
+        "Pruned AVG Deviation (%)",
+        "Pruned AVG Deviation (ms)",
+        "Pruned entries (%)",
+        "Pruned entries (#)"
+        ]
+    )
     for filename in os.listdir(parser_out):
         path = parser_out + "/" + filename
-        out = analyze_out(read(path))
-        print(out)
+        measures_list = read(path)
+        table = analyze_out(measures_list, table)
+    print(table.draw())
 
 main(parser_out=sys.argv[1])

@@ -3,7 +3,7 @@
 out*/
 vm/*
 tools/*.json
-tools/*.txt
+tools/venv
 test/
 tools/tester_output_*
 tools/parser_output_*
