@@ -89,18 +89,19 @@ def analyze_out(measures_list, t):
     row.append("{:.3f}".format(avg))
     row.append("{:.3f}".format(avg * avg_rtt / 100))
     if pruned_pct != 0.0:
-        pruned_num = str(int(pruned))  + " out of " + str(int(entries))
+        #pruned_num = str(int(pruned))  + " out of " + str(int(entries))
         # AVG Deviation with pruned outliers (% and ms)
         row.append("{:.3f}".format(avg_pruned))
         row.append("{:.3f}".format(avg_pruned * avg_rtt / 100))
-        # Percentage of pruned entries
+        # Percentage and number of pruned entries
         row.append(pruned_pct)
-        row.append(pruned_num)
+        row.append(int(pruned))
     else:
         row.append("")
         row.append("")
         row.append("")
-        row.append("No pruning necessary")
+        row.append("None")
+    row.append(int(entries))
     t.add_row(row)
     return t
 
@@ -114,12 +115,14 @@ def main(parser_out):
         "AVG RTT (ms)",
         "AVG Deviation (%)",
         "AVG Deviation (ms)",
-        "Pruned AVG Deviation (%)",
-        "Pruned AVG Deviation (ms)",
-        "Pruned entries (%)",
-        "Pruned entries (#)"
+        "Pruned AVG Dev. (%)",
+        "Pruned AVG Dev. (ms)",
+        "Pruned (%)",
+        "Pruned (#)",
+        "Total (#)"
         ]
     )
+    table.set_cols_width([15,20,20,20,20,20,10,10])
     for filename in os.listdir(parser_out):
         path = parser_out + "/" + filename
         measures_list = read(path)
