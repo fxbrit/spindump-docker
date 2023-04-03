@@ -38,7 +38,6 @@ def read(filename):
                     abs(((measure["interval"] - measure["rtt"]) / measure["rtt"]))*100
                 )
             )
-            print(measure)
             measures_list.append(measure)
             measure = {
                 "interval": 0,
