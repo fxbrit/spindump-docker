@@ -22,8 +22,12 @@ def read(filename):
             measure["interval"] = float(re.sub('ms', '', ms))
         # Chromium internal RTT.
         elif "|||" in line:
-            us = re.sub('us', '', line.split(":",1)[1])
-            measure["rtt"] = float(str(int(us)/1000))
+            if "us" in line:
+                us = re.sub('us', '', line.split(":",1)[1])
+                measure["rtt"] = float(us)/1000
+            elif "ms" in line:
+                ms = re.sub('ms', '', line.split(":",1)[1])
+                measure["rtt"] = float(ms)
         # Flip of the Spin Bit means dict is filled, except first iteration.
         elif "+++" in line and measure["interval"] != 0 and measure["rtt"] != 0:
             # deviation = [(acutal_value - expected_value) / expected_value] * 100
@@ -51,10 +55,10 @@ Produce an indication of the accuracy by means of average deviation.
 Also evaluate the same metrics when excluding last interval and
 obvious outliers.
 '''
-def analyze_out(out):
+def analyze_out(measures_list):
     tot = tot_nolast = nolast = tot_pruned = not_pruned = 0
-    entries = float(len(out))
-    for entry in out:
+    entries = float(len(measures_list))
+    for entry in measures_list:
         tot += entry["deviation"]
         if entry["is_last"] == False:
             tot_nolast += entry["deviation"]
