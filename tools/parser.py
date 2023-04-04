@@ -69,8 +69,11 @@ def parse_file(filename, log_out):
         current_spin = spin_bit
         start_timestamp = timestamp
         if (dict["go_on"]):
-          out += log_out[log_line]
-          log_line+=1
+          if "Chromium" in log_out[log_line]:
+            out += log_out[log_line]
+            log_line+=1
+          else:
+            out += log_out[0]
           if (new_conn):
             flip_counter, new_conn = (0,False)
             out += "\tConnection ID: " + str(conn_id) + ", new connection towards " + str(dest_ip) + "\n"
@@ -164,10 +167,14 @@ def read_log(filename):
   out = []
   with open(filename, "r") as filedata:
       for line in filedata:
-          sample = "Measured latest_rtt_ is"
-          if sample in line:
-              us = line.rstrip('\n').split("is: ",1)[1]
-              out.append("\t||| Internal RTT in Chromium:\t" + us + "\n")
+        sample = "Measured latest_rtt_ is"
+        netem_sample = "netem delay is"
+        if sample in line:
+          us = line.rstrip('\n').split("is: ",1)[1]
+          out.append("\t||| Internal RTT in Chromium:\t" + us + "\n")
+        elif netem_sample in line:
+          ms = line.rstrip('\n').split("is: ",1)[1]
+          out.append("\t||| netem delay:\t" + ms + "\n")
   filedata.close()
   return out
 
