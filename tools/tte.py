@@ -21,7 +21,7 @@ def read(filename):
         if "lasted at most:" in line:
             ms = line.split(" = ",1)[1]
             measure["interval"] = float(re.sub('ms', '', ms))
-        # Chromium internal RTT.
+        # Chromium internal RTT or netem delay.
         elif "|||" in line:
             if "us" in line:
                 us = re.sub('us', '', line.split(":",1)[1])
@@ -73,7 +73,7 @@ def analyze_out(measures_list, t):
             tot_pruned += entry["deviation"]
             not_pruned += 1
             rtt_pruned += entry["rtt"]
-    # 
+    # If no valid measurements.
     if entries == 0:
         t.add_row(["","","","","","","",""])
         return t
@@ -82,7 +82,11 @@ def analyze_out(measures_list, t):
     # Average deviation excluding last interval of a connection.
     # avg_nolast = tot_nolast / float(nolast)
     # Average deviation excluding obvious outliers with more than 100% deviation
-    avg_pruned = tot_pruned / float(not_pruned)
+    if not_pruned != 0:
+        avg_pruned = tot_pruned / float(not_pruned)
+    else:
+        # In case all entries have been pruned.
+        avg_pruned = None
     pruned = entries - not_pruned
     # Percentage of pruned entries
     pruned_pct = float("{:.2f}".format(pruned*100/entries))
@@ -93,10 +97,13 @@ def analyze_out(measures_list, t):
     row.append("{:.3f}".format(avg))
     row.append("{:.3f}".format(avg * avg_rtt / 100))
     if pruned_pct != 0.0:
-        #pruned_num = str(int(pruned))  + " out of " + str(int(entries))
-        # AVG Deviation with pruned outliers (% and ms)
-        row.append("{:.3f}".format(avg_pruned))
-        row.append("{:.3f}".format(avg_pruned * avg_rtt / 100))
+        if avg_pruned == None:
+            row.append("-")
+            row.append("-")
+        else:
+            # AVG Deviation with pruned outliers (% and ms)
+            row.append("{:.3f}".format(avg_pruned))
+            row.append("{:.3f}".format(avg_pruned * avg_rtt / 100))
         # Percentage and number of pruned entries
         row.append(pruned_pct)
         row.append(int(pruned))
